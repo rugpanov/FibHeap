@@ -4,23 +4,22 @@ namespace FibHeap
 {
     public class FibNode
     {
-        public FibNode Parent = null;
-        public FibNode Child = null;
-        public FibNode Left = null;
-        public FibNode Right = null;
+        public FibNode Parent;
+        public FibNode Child;
+        public FibNode Left;
+        public FibNode Right;
         public int Degree;
-        public bool Mark = false;        // метка - был ли удален один из дочерних элементов
-        public int Key;          // числовое значение узла
+        public bool WasDeletedChildNode;
+        public int NodeKey;
 
-        public FibNode(int key)
+        public FibNode(int nodeKey)
         {
-            Key = key;
+            NodeKey = nodeKey;
         }
 
         public void SetChild(FibNode node)
         {
-            FibUtils.SetNeighbors(node.Left, node.Right);
-            FibUtils.SetNeighbors(node, node);
+            FibUtils.RemoveNode(node);
             if (Child == null)
             {
                 Child = node;
@@ -29,12 +28,29 @@ namespace FibHeap
             {
                 FibUtils.UnionNodes(Child, node);
                 node.Parent = this;
-                if (Child.Key > node.Key)
+                if (Child.NodeKey > node.NodeKey)
                 {
                     Child = node;
                 }
             }
             Degree += 1 + node.Degree;
+        }
+
+        public bool HasNeighbors()
+        {
+            return this != Right;
+        }
+
+        public void RemoveLinkFromParent()
+        {
+            if (Parent == null) return;
+            Parent.Degree--;
+            Parent.WasDeletedChildNode = true;
+            if (Parent.Child == this)
+            {
+                Parent.Child = HasNeighbors() ? Right : null;
+            }
+            Parent = null;
         }
     }
 }

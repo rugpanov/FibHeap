@@ -5,7 +5,7 @@ namespace FibHeap
     class FibHeap
     {
         private FibNode myMinFibNode; // узел с минимальным корнем
-        private int mySize = 0; // количество узлов
+        private int mySize; // количество узлов
 
         public void Push(int key)
         {
@@ -19,7 +19,7 @@ namespace FibHeap
                 PlaceNewNodeOnMinRight(newNode);
             }
 
-            if (newNode.Key < myMinFibNode.Key)
+            if (newNode.NodeKey < myMinFibNode.NodeKey)
             {
                 myMinFibNode = newNode;
             }
@@ -32,7 +32,6 @@ namespace FibHeap
             FibUtils.SetNeighbors(newFibNode, newFibNode);
         }
 
-
         private void PlaceNewNodeOnMinRight(FibNode newFibNode)
         {
             var prevRightNode = myMinFibNode.Right;
@@ -42,7 +41,12 @@ namespace FibHeap
 
         public int GetMin()
         {
-            return myMinFibNode.Key;
+            return myMinFibNode.NodeKey;
+        }        
+        
+        public FibNode GetMinNode()
+        {
+            return myMinFibNode;
         }
 
         public void Merge(FibHeap second)
@@ -69,33 +73,34 @@ namespace FibHeap
 
         public int Pop()
         {
+            int extractedKey;
             if (mySize == 0)
             {
                 throw new InvalidOperationException();
             }
-            if (myMinFibNode.Right == myMinFibNode)
+            if (!myMinFibNode.HasNeighbors())
             {
-                var key = myMinFibNode.Key;
+                extractedKey = myMinFibNode.NodeKey;
                 myMinFibNode = myMinFibNode.Child;
-                //  FibUtils.PrintHeap(myMinFibNode);
-                return key;
+                return extractedKey;
             }
-            var prevMinNode = myMinFibNode;
             if (myMinFibNode.Child != null)
+            {
                 FibUtils.UnionNodes(myMinFibNode, myMinFibNode.Child);
+            }
             FibUtils.SetNeighbors(myMinFibNode.Left, myMinFibNode.Right);
+            extractedKey = myMinFibNode.NodeKey;
             myMinFibNode =
-                myMinFibNode.Right; // перекинем указаиель min на правого сына, далее consolidate() скорректирует min
+                myMinFibNode.Right; // перекинем указатель min на правого сына, далее consolidate() скорректирует min
             Consolidate();
             mySize--;
-            // FibUtils.PrintHeap(myMinFibNode);
-            return prevMinNode.Key;
+            return extractedKey;
         }
 
         private void Consolidate()
         {
             var degreeArray = new FibNode[mySize];
-            degreeArray[myMinFibNode.Degree] = myMinFibNode; // создаем массив и инициализируем его min
+            degreeArray[myMinFibNode.Degree] = myMinFibNode;
             var current = myMinFibNode.Right;
             current.Parent = null;
             while (degreeArray[current.Degree] != current) // пока элементы массива меняются
@@ -109,7 +114,7 @@ namespace FibHeap
                 {
                     var conflict = degreeArray[current.Degree];
                     FibNode addTo, adding;
-                    if (conflict.Key < current.Key)
+                    if (conflict.NodeKey < current.NodeKey)
                     {
                         addTo = conflict;
                         adding = current;
@@ -123,58 +128,53 @@ namespace FibHeap
                     degreeArray[adding.Degree] = null;
                     current = addTo;
                 }
-                if (myMinFibNode.Key > current.Key) // обновляем минимум, если нужно
+                if (myMinFibNode.NodeKey > current.NodeKey) // обновляем минимум, если нужно
                 {
                     myMinFibNode = current;
                 }
             }
         }
 
-        public void DecreaseKey(FibNode x, int newValue)
+        public void Delete(FibNode node)
         {
-            if (newValue > x.Parent.Key)// если после изменения структкра дерева сохранится, то меняем и выходим 
-            {
-                
-                x.Key = newValue;
-                return;
-            }
-            var parent = x.Parent; // иначе вызываем cut и cascadingCut
-            Cut(x);
-            CascadingCut(x.Parent);
-        }
-
-        public void Cut(FibNode node)
-        {
-            var oldLeft = node.Left;
-            var oldRight = node.Right;
-            oldRight.Left = oldLeft; // аккуратно удаляем текущую вершину
-            oldLeft.Right = oldRight;
-            node.Right = node;
-            node.Left = node;
-            if (node.Parent != null)
-            {
-                node.Parent.Degree--;
-                if (node.Parent.Child == node) // чтобы родитель не потерял ссылку на сыновей проверяем: 
-                    node.Parent.Child = node.Right == node ? null : node.Right;
-                node.Parent = null;
-            }
-            FibUtils.UnionNodes(myMinFibNode, node); // вставляем наше поддерево в корневой список
-        }
-
-        public void CascadingCut(FibNode x)
-        {
-            while (x.Mark) // пока у нас помеченые вершины вырезаем их
-            {
-                Cut(x);
-                x = x.Parent;
-            }
-            x.Mark = true; // последнюю вершину нужно пометить — у нее удаляли ребенка
-        }
-
-        public void Delete(FibNode x)
-        {
-            DecreaseKey(x, int.MinValue);
+            DecreaseKey(node, int.MinValue);
             Pop();
         }
+        
+        private void DecreaseKey(FibNode node, int newValue)
+        {
+            if (node.Parent == null || newValue > node.Parent.NodeKey)// если после изменения структура дерева сохранится, то меняем и выходим 
+            {
+                node.NodeKey = newValue;
+                return;
+            }
+            Cut(node);
+            CascadingCut(node.Parent);
+        }
+        
+        private void Cut(FibNode node)
+        {
+            FibUtils.RemoveNode(node);
+            FibUtils.UnionNodes(myMinFibNode, node);
+            node.WasDeletedChildNode = false;
+        }
+
+        private void CascadingCut(FibNode node)
+        {
+            while (node.WasDeletedChildNode)
+            {
+                Cut(node);
+                if (node.Parent != null)
+                {
+                    node = node.Parent;
+                }
+                else
+                {
+                    break;
+                }
+            }
+            //Мы пометим в FibNode#RemoveLinkFromParent
+            //node.Mark = true; 
+        }        
     }
 }
