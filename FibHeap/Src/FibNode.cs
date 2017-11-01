@@ -1,6 +1,4 @@
-﻿using System.Xml;
-
-namespace FibHeap
+﻿namespace FibHeap
 {
     public class FibNode
     {

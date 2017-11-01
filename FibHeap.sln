@@ -5,6 +5,8 @@ VisualStudioVersion = 15.0.26730.15
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FibHeap", "FibHeap\FibHeap.csproj", "{C32FD8A1-1CBB-4BFA-AE9D-356835941586}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FibHeap.Tests", "FibHeap.Tests\FibHeap.Tests.csproj", "{302FFDF8-C441-489F-A880-7AADA9207679}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +17,10 @@ Global
 		{C32FD8A1-1CBB-4BFA-AE9D-356835941586}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C32FD8A1-1CBB-4BFA-AE9D-356835941586}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C32FD8A1-1CBB-4BFA-AE9D-356835941586}.Release|Any CPU.Build.0 = Release|Any CPU
+		{302FFDF8-C441-489F-A880-7AADA9207679}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{302FFDF8-C441-489F-A880-7AADA9207679}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{302FFDF8-C441-489F-A880-7AADA9207679}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{302FFDF8-C441-489F-A880-7AADA9207679}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -1,5 +1,4 @@
-﻿using System;
-using FibHeap.Tests;
+﻿using FibHeap.Tests;
 
 namespace FibHeap
 {
