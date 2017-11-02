@@ -13,11 +13,14 @@
         public FibNode(int nodeKey)
         {
             NodeKey = nodeKey;
+            Right = this;
+            Left = this;
         }
 
-        public void SetChild(FibNode node)
+        public void CutFromCurrentPlaceAndSetAsChild(FibNode node)
         {
-            FibUtils.RemoveNode(node);
+            FibUtils.SafeRemoveNode(node);
+            node.Parent = this;
             if (Child == null)
             {
                 Child = node;
@@ -25,7 +28,6 @@
             else
             {
                 FibUtils.UnionNodes(Child, node);
-                node.Parent = this;
                 if (Child.NodeKey > node.NodeKey)
                 {
                     Child = node;
@@ -48,7 +50,12 @@
             {
                 Parent.Child = HasNeighbors() ? Right : null;
             }
-            Parent = null;
+        }
+
+        public void SetRightNeighbor(FibNode rightNeighbor)
+        {
+            rightNeighbor.Left = this;
+            Right = rightNeighbor;
         }
     }
 }

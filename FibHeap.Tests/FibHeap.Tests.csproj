@@ -43,6 +43,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="FibHeapTests.cs" />
+    <Compile Include="FibNodeTests.cs" />
+    <Compile Include="FibUtilsTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

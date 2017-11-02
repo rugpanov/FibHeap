@@ -6,14 +6,8 @@ namespace FibHeap
     {
         public static void UnionNodes(FibNode first, FibNode second)
         {
-            SetNeighbors(first.Left, second.Right);
-            SetNeighbors(second, first);
-        }
-
-        public static void SetNeighbors(FibNode left, FibNode right)
-        {
-            right.Left = left;
-            left.Right = right;
+            first.Left.SetRightNeighbor(second.Right);
+            second.SetRightNeighbor(first);
         }
 
         public static void PrintHeap(FibNode node, int level = 0)
@@ -34,11 +28,11 @@ namespace FibHeap
             }
         }
 
-        public static void RemoveNode(FibNode fibNode)
+        public static void SafeRemoveNode(FibNode fibNode)
         {
-            SetNeighbors(fibNode.Left, fibNode.Right);
-            SetNeighbors(fibNode, fibNode);
             fibNode.RemoveLinkFromParent();
+            fibNode.Left.SetRightNeighbor(fibNode.Right);
+            fibNode.SetRightNeighbor(fibNode);
         }
     }
 }
