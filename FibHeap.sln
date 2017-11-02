@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FibHeap", "FibHeap\FibHeap.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FibHeap.Tests", "FibHeap.Tests\FibHeap.Tests.csproj", "{302FFDF8-C441-489F-A880-7AADA9207679}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FibHeap.PerformanceTests", "FibHeap.PerformanceTests\FibHeap.PerformanceTests.csproj", "{8B8F2E6D-1352-49E0-91CD-641BE2AB7F93}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{302FFDF8-C441-489F-A880-7AADA9207679}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{302FFDF8-C441-489F-A880-7AADA9207679}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{302FFDF8-C441-489F-A880-7AADA9207679}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8B8F2E6D-1352-49E0-91CD-641BE2AB7F93}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8B8F2E6D-1352-49E0-91CD-641BE2AB7F93}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8B8F2E6D-1352-49E0-91CD-641BE2AB7F93}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8B8F2E6D-1352-49E0-91CD-641BE2AB7F93}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

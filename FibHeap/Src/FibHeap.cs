@@ -180,6 +180,11 @@ namespace FibHeap
             }
             //Мы пометим в FibNode#RemoveLinkFromParent
             //node.Mark = true; 
-        }        
+        }
+        
+        private static void Main(string[] args)
+        {
+            throw new InvalidOperationException();
+        }
     }
 }

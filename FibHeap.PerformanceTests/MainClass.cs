@@ -1,14 +1,18 @@
 ﻿using System;
 using System.Diagnostics;
 
-namespace FibHeap.Tests
+namespace FibHeap.PerformanceTests
 {
-    public static class FibHeapTest
+    internal static class MainClass
     {
-        public static void Test()
+        private static void Main(string[] args)
         {
-            
-            int n = 2;
+            var fh = new FibHeap();
+        }
+
+        private static void TestPerformance()
+        {
+            var n = 2;
             for (var j = 0; j < 25; j++)
             {
                 var fh = new FibHeap();
