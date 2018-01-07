@@ -15,39 +15,34 @@ namespace FibHeap.PerformanceTests
         private static void Main(string[] args)
         {
             var sb = new StringBuilder();
-            sb.Append("Measure number of ticks to push 10 elements to FibHeap\n");
-            for (var i = FROM; i < TO; i += STEP)
-            {
-                var fh = GenerateFibHeapWithNumberOfElements(i);
-                var numberOfTicks = MeasureTicksToPush(fh);
-                sb.Append($"{i};{numberOfTicks}\n");
-            }
-
-            sb.Append("Measure number of ticks to pop an element from a flat FibHeap\n");
-            for (var i = FROM; i < TO; i += STEP)
-            {
-                var fh = GenerateFibHeapWithNumberOfElements(i);
-                var numberOfTicks = MeasureTicksToPop(fh);
-                sb.Append($"{i};{numberOfTicks}\n");
-            }
-
-            var fibHeap = new FibHeap();
-            sb.Append("Measure number of ticks to pop an element from a not-flat FibHeap\n");
-            for (var i = FROM; i < TO; i += STEP)
-            {
-                AddNumberOfElements(fibHeap, STEP);
-                var numberOfTicks = MeasureTicksToPop(fibHeap);
-                sb.Append($"{i};{numberOfTicks}\n");
-            }
-
-            sb.Append(
-                "Measure number of ticks to execute number of Random operations with probability of Push = 0.7\n");
-            sb.Append(MeasureNumberOfRendomOperation(0.7));
-
             sb.Append(
                 "Measure number of ticks to execute number of Random operations with probability of Push = 0.9\n");
-            sb.Append(MeasureNumberOfRendomOperation(0.9));
-            System.IO.File.WriteAllText(FILE_ABS_PATH, sb.ToString());
+            var fb = new FibHeap();
+            MakeNumberOfRendomOperation(fb, 1000, 0.95);
+            
+            var timePerParse = Stopwatch.StartNew();
+            MakeNumberOfRendomOperation(fb, 10000, 0.5);
+            timePerParse.Stop();
+            sb.Append($"1000;{timePerParse.ElapsedTicks / 10000}\n");
+            
+            for (int i = 10000; i < 700000; i += 20000)
+            {
+                var sumTime = 0L;
+                for (int tries = 0; tries < 10; tries++)
+                {
+                    fb = new FibHeap();
+                    MakeNumberOfRendomOperation(fb, i, 0.95);
+
+                    timePerParse = Stopwatch.StartNew();
+                    MakeNumberOfRendomOperation(fb, 10000, 0.5);
+                    timePerParse.Stop();
+                    sumTime += timePerParse.ElapsedTicks / 10000;
+                }
+                sb.Append($"{i};{sumTime / 10}\n");
+                Console.WriteLine(sb);
+            }
+            Console.WriteLine(sb);
+            //System.IO.File.WriteAllText(FILE_ABS_PATH, sb.ToString());
         }
 
         private static StringBuilder MeasureNumberOfRendomOperation(double probabilityOfPush)
@@ -66,19 +61,21 @@ namespace FibHeap.PerformanceTests
             return sb;
         }
 
+        static Random rand = new Random();
         private static void MakeNumberOfRendomOperation(FibHeap fb, int number, double probabilityOfPush)
         {
             for (var i = 0; i < number; i++)
             {
                 if (IsNextOperationPush(probabilityOfPush))
                 {
-                    fb.Push(100);
+                    fb.Push(rand.Next(100));
                 }
-                else if (fb.GetMinNode() != null)
+                else if (fb.MySize > 0)
                 {
                     fb.Pop();
                 }
             }
+            fb.Pop();
         }
 
         private static readonly Random Rand = new Random();
@@ -87,45 +84,6 @@ namespace FibHeap.PerformanceTests
         {
             return Rand.Next(100) < probabilityOfPush * 100;
         }
-
-        private static void AddNumberOfElements(FibHeap fh, int number)
-        {
-            for (var i = 0; i < number; i++)
-            {
-                fh.Push(i);
-            }
-        }
-
-        private static FibHeap GenerateFibHeapWithNumberOfElements(int number)
-        {
-            var fh = new FibHeap();
-            for (var i = 0; i < number; i++)
-            {
-                fh.Push(i);
-            }
-            return fh;
-        }
-
-        private static long MeasureTicksToPush(FibHeap fh)
-        {
-            var timePerParse = Stopwatch.StartNew();
-            for (var i = 0; i < 10; i++)
-            {
-                fh.Push(239);
-            }
-            timePerParse.Stop();
-            return timePerParse.ElapsedTicks;
-        }
-
-        private static long MeasureTicksToPop(FibHeap fh)
-        {
-            var timePerParse = Stopwatch.StartNew();
-            for (var i = 0; i < 1; i++)
-            {
-                fh.Pop();
-            }
-            timePerParse.Stop();
-            return timePerParse.ElapsedTicks;
-        }
+        
     }
 }

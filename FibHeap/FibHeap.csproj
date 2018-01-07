@@ -45,6 +45,7 @@
     <Compile Include="Src\FibHeap.cs" />
     <Compile Include="Src\FibNode.cs" />
     <Compile Include="Src\FibUtils.cs" />
+    <Compile Include="Src\MyLinkedList.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

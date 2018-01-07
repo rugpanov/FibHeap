@@ -1,124 +1,116 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Reflection;
 
 namespace FibHeap
 {
     public class FibHeap
     {
-        private FibNode myMinFibNode; // узел с минимальным корнем
-        private int mySize; // количество узлов
+        private LinkedList<FibNode> topList = new LinkedList<FibNode>();
+        public int MySize = 0;
 
+        private LinkedList<FibNode> getTopList()
+        {
+            return topList;
+        }
+    
         public void Push(int key)
         {
             var newNode = new FibNode(key);
-            if (myMinFibNode == null)
+            if (MySize == 0)
             {
-                InitMinNode(newNode);
+                topList.AddLast(newNode);
             }
             else
             {
-                PlaceNewNodeOnMinRight(newNode);
+                if (topList.First.Value.NodeKey > newNode.NodeKey)
+                {
+                    topList.AddFirst(newNode);
+                }
+                else
+                {
+                    topList.AddAfter(topList.First, newNode);
+                }
             }
-
-            if (newNode.NodeKey < myMinFibNode.NodeKey)
-            {
-                myMinFibNode = newNode;
-            }
-            mySize++;
-        }
-
-        private void InitMinNode(FibNode newFibNode)
-        {
-            myMinFibNode = newFibNode;
-            newFibNode.SetRightNeighbor(newFibNode);
-        }
-
-        private void PlaceNewNodeOnMinRight(FibNode newFibNode)
-        {
-            var prevRightNode = myMinFibNode.Right;
-            myMinFibNode.SetRightNeighbor(newFibNode);
-            newFibNode.SetRightNeighbor(prevRightNode);
+            MySize++;
         }
 
         public int GetMin()
         {
-            if (myMinFibNode == null)
+            if (MySize == 0)
             {
                 throw new IndexOutOfRangeException("There is no elements in the heap.");
             }
-            return myMinFibNode.NodeKey;
-        }        
-        
-        public FibNode GetMinNode()
-        {
-            return myMinFibNode;
+            return topList.First.Value.NodeKey;
         }
 
-        public void Merge(FibHeap second)
+        public FibNode GetMinNode()
         {
-            if (second.mySize == 0)
+            if (topList.Count == 0)
             {
-                return;
+                return null;
             }
-            if (mySize == 0)
-            {
-                myMinFibNode = second.myMinFibNode;
-                mySize = second.mySize;
-            }
-            else
-            {
-                FibUtils.UnionNodes(myMinFibNode, second.myMinFibNode);
-                mySize += second.mySize;
-            }
-            if (myMinFibNode == null || GetMin() > second.GetMin())
-            {
-                myMinFibNode = second.myMinFibNode;
-            }
+            return topList.First.Value;                
         }
 
         public int Pop()
         {
-            int extractedKey;
-            if (myMinFibNode == null)
+            if (MySize == 0)
             {
-                throw new InvalidOperationException();
+                throw new IndexOutOfRangeException("There is no elements in the heap.");
             }
-            if (!myMinFibNode.HasNeighbors())
-            {
-                extractedKey = myMinFibNode.NodeKey;
-                myMinFibNode = myMinFibNode.Child;
-                return extractedKey;
-            }
-            if (myMinFibNode.Child != null)
-            {
-                FibUtils.UnionNodes(myMinFibNode, myMinFibNode.Child);
-            }
-            myMinFibNode.Left.SetRightNeighbor(myMinFibNode.Right);
-            extractedKey = myMinFibNode.NodeKey;
-            myMinFibNode =
-                myMinFibNode.Right; // перекинем указатель min на правого сына, далее consolidate() скорректирует min
+            var extractedKey = topList.First.Value.NodeKey;
+            FibUtils.ConcatLists(topList, topList.First.Value.Children);
+            topList.RemoveFirst();
+            MySize--;
             Consolidate();
-            mySize--;
             return extractedKey;
+        }
+
+        public void merge(FibHeap anotherHeap)
+        {
+//            var anotherTopList = anotherHeap.getTopList();
+//            if (anotherHeap.GetMin() > GetMin())
+//            {
+//                foreach (var node in anotherHeap)
+//                {
+//                    
+//                }
+//            }
         }
 
         private void Consolidate()
         {
-            var degreeArray = new FibNode[mySize];
-            degreeArray[myMinFibNode.Degree] = myMinFibNode;
-            var current = myMinFibNode.Right;
-            current.Parent = null;
-            while (degreeArray[current.Degree] != current) // пока элементы массива меняются
+            if (topList.First == null)
             {
-                if (degreeArray[current.Degree] == null) // если ячейка пустая, то положим в нее текущий элемент
+                return;
+            }
+            LinkedListNode<FibNode> min = topList.First;
+            var degreeArray = new LinkedListNode<FibNode>[MySize];
+            var current = topList.First;
+            while (current != null)
+            {
+                var node = current.Value;
+                var nodeDegree = node.Degree;
+                if (node.NodeKey < min.Value.NodeKey)
                 {
-                    degreeArray[current.Degree] = current;
-                    current = current.Right;
+                    min = current;
                 }
-                else // иначе подвесим к меньшему из текущего корня и того, который лежит в ячейке другой
+
+                if (degreeArray[nodeDegree] == null)
                 {
-                    var conflict = degreeArray[current.Degree];
-                    FibNode addTo, adding;
-                    if (conflict.NodeKey < current.NodeKey)
+                    degreeArray[nodeDegree] = current;
+                    current = current.Next;
+                }
+                else if (degreeArray[nodeDegree] == current)
+                {
+                    current = current.Next;
+                }
+                else
+                {
+                    var conflict = degreeArray[nodeDegree];
+                    LinkedListNode<FibNode> addTo, adding;
+                    if (conflict.Value.NodeKey <= node.NodeKey)
                     {
                         addTo = conflict;
                         adding = current;
@@ -128,58 +120,28 @@ namespace FibHeap
                         addTo = current;
                         adding = conflict;
                     }
-                    addTo.CutFromCurrentPlaceAndSetAsChild(adding);
-                    degreeArray[adding.Degree] = null;
+
+                    if (adding == min)
+                    {
+                        min = addTo;
+                    }
+                    topList.Remove(adding);
+                    addTo.Value.Children.AddLast(adding);
+                    addTo.Value.Degree += 1;
+
+                    degreeArray[adding.Value.Degree] = null;
                     current = addTo;
                 }
-                if (myMinFibNode.NodeKey > current.NodeKey) // обновляем минимум, если нужно
-                {
-                    myMinFibNode = current;
-                }
             }
+
+            PlaceMinOnFirst(min);
         }
 
-        public void Delete(FibNode node)
+        private void PlaceMinOnFirst(LinkedListNode<FibNode> min)
         {
-            DecreaseKey(node, int.MinValue);
-            Pop();
-        }
-        
-        private void DecreaseKey(FibNode node, int newValue)
-        {
-            if (node.Parent == null || newValue > node.Parent.NodeKey)// если после изменения структура дерева сохранится, то меняем и выходим 
-            {
-                node.NodeKey = newValue;
-                return;
-            }
-            Cut(node);
-            CascadingCut(node.Parent);
-            node.Parent = null;
-        }
-        
-        private void Cut(FibNode node)
-        {
-            FibUtils.SafeRemoveNode(node);
-            FibUtils.UnionNodes(myMinFibNode, node);
-            node.WasDeletedChildNode = false;
-        }
-
-        private void CascadingCut(FibNode node)
-        {
-            while (node.WasDeletedChildNode)
-            {
-                Cut(node);
-                if (node.Parent != null)
-                {
-                    node = node.Parent;
-                }
-                else
-                {
-                    break;
-                }
-            }
-            //Мы пометим в FibNode#RemoveLinkFromParent
-            //node.Mark = true; 
+            var minNode = min.Value;
+            topList.Remove(min);
+            topList.AddFirst(minNode);
         }
         
         private static void Main(string[] args)
