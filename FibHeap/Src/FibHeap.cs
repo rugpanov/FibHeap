@@ -6,10 +6,12 @@ namespace FibHeap
 {
     public class FibHeap
     {
-        private LinkedList<FibNode> topList = new LinkedList<FibNode>();
+        //private LinkedList<FibNode> topList = new LinkedList<FibNode>();
+        private MyLinkedList topList = new MyLinkedList();
         public int MySize = 0;
 
-        private LinkedList<FibNode> getTopList()
+        //private LinkedList<FibNode> getTopList()
+        private MyLinkedList getTopList()
         {
             return topList;
         }
@@ -29,7 +31,7 @@ namespace FibHeap
                 }
                 else
                 {
-                    topList.AddAfter(topList.First, newNode);
+                    topList.AddLast(newNode);
                 }
             }
             MySize++;
@@ -85,8 +87,11 @@ namespace FibHeap
             {
                 return;
             }
-            LinkedListNode<FibNode> min = topList.First;
-            var degreeArray = new LinkedListNode<FibNode>[MySize];
+            //LinkedListNode<FibNode> min = topList.First;
+            Node min = topList.First;
+            
+            //var degreeArray = new LinkedListNode<FibNode>[MySize];
+            var degreeArray = new Node[MySize];
             var current = topList.First;
             while (current != null)
             {
@@ -109,7 +114,8 @@ namespace FibHeap
                 else
                 {
                     var conflict = degreeArray[nodeDegree];
-                    LinkedListNode<FibNode> addTo, adding;
+                    //LinkedListNode<FibNode> addTo, adding;
+                    Node addTo, adding;
                     if (conflict.Value.NodeKey <= node.NodeKey)
                     {
                         addTo = conflict;
@@ -126,7 +132,7 @@ namespace FibHeap
                         min = addTo;
                     }
                     topList.Remove(adding);
-                    addTo.Value.Children.AddLast(adding);
+                    addTo.Value.Children.AddLast(adding.Value);
                     addTo.Value.Degree += 1;
 
                     degreeArray[adding.Value.Degree] = null;
@@ -137,7 +143,8 @@ namespace FibHeap
             PlaceMinOnFirst(min);
         }
 
-        private void PlaceMinOnFirst(LinkedListNode<FibNode> min)
+        //private void PlaceMinOnFirst(LinkedListNode<FibNode> min)
+        private void PlaceMinOnFirst(Node min)
         {
             var minNode = min.Value;
             topList.Remove(min);
