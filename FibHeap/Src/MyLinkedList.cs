@@ -40,7 +40,7 @@ namespace FibHeap
             mark.UnsafeNext.Prev = mark;
             Count--;
         }
-        
+
         public void RemoveLast()
         {
             mark.Prev = mark.Prev.Prev;
@@ -59,6 +59,22 @@ namespace FibHeap
             prevNode.UnsafeNext = nextNode;
             nextNode.Prev = prevNode;
             Count--;
+        }
+
+        public void Concat(MyLinkedList list)
+        {
+            if (list.Count == 0)
+            {
+                return;
+            }
+
+            Count += list.Count;
+
+            Last.UnsafeNext = list.First;
+            list.First.Prev = Last;
+
+            mark.Prev = list.Last;
+            mark.Prev.UnsafeNext = mark;
         }
     }
 
@@ -83,10 +99,9 @@ namespace FibHeap
                 {
                     return null;
                 }
-                
+
                 return UnsafeNext;
             }
         }
-
     }
 }

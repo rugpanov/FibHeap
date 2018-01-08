@@ -1,21 +1,17 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Reflection;
 
 namespace FibHeap
 {
     public class FibHeap
     {
-        //private LinkedList<FibNode> topList = new LinkedList<FibNode>();
         private MyLinkedList topList = new MyLinkedList();
         public int MySize = 0;
 
-        //private LinkedList<FibNode> getTopList()
         private MyLinkedList getTopList()
         {
             return topList;
         }
-    
+
         public void Push(int key)
         {
             var newNode = new FibNode(key);
@@ -52,7 +48,7 @@ namespace FibHeap
             {
                 return null;
             }
-            return topList.First.Value;                
+            return topList.First.Value;
         }
 
         public int Pop()
@@ -62,35 +58,41 @@ namespace FibHeap
                 throw new IndexOutOfRangeException("There is no elements in the heap.");
             }
             var extractedKey = topList.First.Value.NodeKey;
-            FibUtils.ConcatLists(topList, topList.First.Value.Children);
+            topList.Concat(topList.First.Value.Children);
             topList.RemoveFirst();
             MySize--;
             Consolidate();
             return extractedKey;
         }
 
-        public void merge(FibHeap anotherHeap)
+        public void Merge(FibHeap anotherHeap)
         {
-//            var anotherTopList = anotherHeap.getTopList();
-//            if (anotherHeap.GetMin() > GetMin())
-//            {
-//                foreach (var node in anotherHeap)
-//                {
-//                    
-//                }
-//            }
+            var anotherTopList = anotherHeap.getTopList();
+            if (anotherHeap.GetMin() > GetMin())
+            {
+                topList.Concat(anotherTopList);
+            }
+            else
+            {
+                anotherTopList.Concat(topList);
+                topList = anotherTopList;
+            }
+            MySize += anotherHeap.MySize;
+        }
+
+        public void DecreaseKey()
+        {
+            topList.First.Value.NodeKey--;
         }
 
         private void Consolidate()
         {
-            if (topList.First == null)
+            if (topList.First.Value == null)
             {
                 return;
             }
-            //LinkedListNode<FibNode> min = topList.First;
             Node min = topList.First;
-            
-            //var degreeArray = new LinkedListNode<FibNode>[MySize];
+
             var degreeArray = new Node[MySize];
             var current = topList.First;
             while (current != null)
@@ -114,7 +116,6 @@ namespace FibHeap
                 else
                 {
                     var conflict = degreeArray[nodeDegree];
-                    //LinkedListNode<FibNode> addTo, adding;
                     Node addTo, adding;
                     if (conflict.Value.NodeKey <= node.NodeKey)
                     {
@@ -143,14 +144,13 @@ namespace FibHeap
             PlaceMinOnFirst(min);
         }
 
-        //private void PlaceMinOnFirst(LinkedListNode<FibNode> min)
         private void PlaceMinOnFirst(Node min)
         {
             var minNode = min.Value;
             topList.Remove(min);
             topList.AddFirst(minNode);
         }
-        
+
         private static void Main(string[] args)
         {
             throw new InvalidOperationException();
