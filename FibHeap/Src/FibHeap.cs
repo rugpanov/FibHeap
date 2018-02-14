@@ -55,7 +55,7 @@ namespace FibHeap
         {
             if (MySize == 0)
             {
-                throw new IndexOutOfRangeException("There is no elements in the heap.");
+                throw new IndexOutOfRangeException("There is no elements in the heap...");
             }
             var extractedKey = topList.First.Value.NodeKey;
             topList.Concat(topList.First.Value.Children);
